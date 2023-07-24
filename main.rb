@@ -6,22 +6,22 @@ require_relative 'output'
 
 def main(argv)
   input = UserInput.new(argv)
-  query = input.main
+  input = input.main
 
-  query_result(query)
+  query_result(input)
 end
 
-def query_result(query)
-  result = run_query(query)
+def query_result(input)
+  result = run_query(input)
 
   display = Output.new(result)
-  display.display_normal_result(query[:query]) if [1, 2].include?(query[:query])
+  display.display_normal_result(input[:query]) if [1, 2].include?(input[:query])
 end
 
 def run_query(input)
   result = run_query1(input) if input[:query] == 1
   result = run_query2(input) if input[:query] == 2
-  result = run_query3(input) if input[:query] == 3
+  run_query3(input) if input[:query] == 3
 
   result
 end
@@ -36,7 +36,7 @@ def run_query1(input)
 
   # Read the content of each matching file
   matching_files.each do |file_path|
-    my_csv = CustomCSV.new(file_path, ',', result, 1) # puts file_name
+    my_csv = CustomCSV.new(file_path, ',', 1, result)
     result = my_csv.read_file(:maxTemp, :minTemp, :maxHumid)
   end
   result
@@ -52,7 +52,7 @@ def run_query2(input)
 
   # Read the content of each matching file
   matching_files.each do |file_path|
-    my_csv = CustomCSV.new(file_path, ',', result, 2) # puts file_name
+    my_csv = CustomCSV.new(file_path, ',', 2, result)
     result = my_csv.read_file(:maxTemp, :minTemp, :meanHumid)
   end
   average(result)
@@ -65,12 +65,11 @@ def run_query3(input)
 
   # Find all files in the directory that contain the custom string in their path
   matching_files = Dir.glob(File.join(directory_path, "**/*#{year}*#{month}*"))
-  result = {}
 
   # Read the content of each matching file
   matching_files.each do |file_path|
-    my_csv = CustomCSV.new(file_path, ',', result, 3) # puts file_name
-    result = my_csv.read_file(:maxTemp, :minTemp)
+    my_csv = CustomCSV.new(file_path, ',', 3) # puts file_name
+    my_csv.read_file(:maxTemp, :minTemp)
   end
 end
 
