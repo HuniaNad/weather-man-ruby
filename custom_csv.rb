@@ -2,9 +2,8 @@
 
 require 'csv'
 require_relative 'custom_output'
-
 class CustomCSV
-  def initialize(file_name, delimiter, result, query_type)
+  def initialize(file_name, delimiter, query_type, result = {})
     @file_name = file_name
     @delimiter = delimiter
     @result = result
@@ -13,7 +12,7 @@ class CustomCSV
     @count = {}
   end
 
-  # reading file's specific column data
+  # reads file's specific column data
   def read_file(*keys)
     CSV.foreach(@file_name, col_sep: @delimiter) do |row|
       # ignoring empty/null/extra lines
@@ -33,16 +32,21 @@ class CustomCSV
   # fetches file's required column indexes
   def get_headers_index(row, keys)
     headers = {}
-    keys.each do |key|
-      index = row.find_index { |col| (col.downcase.delete(' ').include? key.to_s.downcase) }
-      raise IndexError if index.nil?
+    begin
+      keys.each do |key|
+        # finds index of column which matches with passed key symbols
+        index = row.find_index { |col| (col.downcase.delete(' ').include? key.to_s.downcase) }
+        raise IndexError if index.nil?
 
-      headers[key] = index
+        headers[key] = index
+      end
+    rescue IndexError
+      puts 'ERROR: Index not found!'
     end
     headers
   end
 
-  # generates query search
+  # generates query result
   def get_result(row, keys)
     return initialize_result(row, keys) if @result.empty?
 
@@ -53,6 +57,7 @@ class CustomCSV
     end
   end
 
+  # initializes @result when it is empty
   def initialize_result(row, keys)
     keys.each { |key| update_result(row, key) }
   end
@@ -90,19 +95,25 @@ class CustomCSV
 
   def show_result(row)
     output = Output.new
-    # print_different_lines(output, row)
+    # result_on_different_lines(output, row)
+    result_on_same_line(output, row)
+  end
+
+  # method to print the high and low temperatures on separate lines
+  def result_on_different_lines(output, row)
+    @result.each do |key, value|
+      output.show_high_temp_bar(row, value) if key.to_s.include? 'max'
+      output.show_low_temp_bar(row, value) if key.to_s.include? 'min'
+    end
+  end
+
+  # method to print the high and low temperatures on same line
+  def result_on_same_line(output, row)
     print "#{row[0].split('-')[2]} "
     min_temp = @result[:minTemp].to_i
     max_temp = @result[:maxTemp].to_i
     output.show_temp_bar(min_temp, 'blue')
     output.show_temp_bar(max_temp, 'red')
     print " #{min_temp}C - #{max_temp}C\n"
-  end
-
-  def print_different_lines(output, row)
-    @result.each do |key, value|
-      output.show_high_temp_bar(row, value) if key.to_s.include? 'max'
-      output.show_low_temp_bar(row, value) if key.to_s.include? 'min'
-    end
   end
 end
