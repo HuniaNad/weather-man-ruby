@@ -68,6 +68,7 @@ def run_query3(input)
 
   # Find all files in the directory that contain the custom string in their path
   matching_files = Dir.glob(File.join(directory_path, "**/*#{year}*#{month}*"))
+  puts 'Data not found!' if matching_files.empty?
   # Read the content of each matching file
   matching_files.each do |file_path|
     my_csv = CustomCSV.new(file_path, ',', 3) # puts file_name
