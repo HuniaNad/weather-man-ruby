@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require_relative 'input'
-class UserInput
+class UserInputValidator
   include Input
 
   def initialize(input)
     @input = input
     @query = {}
+    @query1 = '-e'
+    @query2 = '-a'
+    @query3 = '-c'
   end
 
   def main
@@ -20,15 +23,8 @@ class UserInput
 
   # stores CLI input values separately in a Hash object
   def fetch_input
-    if @input[0] == '-e'
-      @query[:query] = 1
-    elsif @input[0] == '-a'
-      @query[:query] = 2
-      fetch_month
-    else
-      @query[:query] = 3
-      fetch_month
-    end
+    @query[:query] = @input.first
+    fetch_month if @input.first == @query2 || @input.first == @query3
     fetch_year
     fetch_file
   end

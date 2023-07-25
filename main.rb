@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'user_input'
+require_relative 'user_input_validator'
 require_relative 'custom_csv'
 require_relative 'output'
 
@@ -8,10 +8,13 @@ class WeatherMean
   include CustomCSV
   def initialize(argv)
     @argv = argv
+    @query1 = '-e'
+    @query2 = '-a'
+    @query3 = '-c'
   end
 
   def main
-    input = UserInput.new(@argv)
+    input = UserInputValidator.new(@argv)
     # input validation check
     input = input.main
     # run query based on the cli input
@@ -20,16 +23,16 @@ class WeatherMean
 
   def query_result(input)
     run_query(input)
-    return unless [1, 2].include?(input[:query])
+    return unless [@query1, @query2].include?(input[:query])
 
     display = Output.new(@result)
     display.display_normal_result(input[:query])
   end
 
   def run_query(input)
-    run_query1(input) if input[:query] == 1
-    run_query2(input) if input[:query] == 2
-    run_query3(input) if input[:query] == 3
+    run_query1(input) if input[:query] == @query1
+    run_query2(input) if input[:query] == @query2
+    run_query3(input) if input[:query] == @query3
   end
 
   # -e query
@@ -42,7 +45,7 @@ class WeatherMean
     @result = {}
     # Read the content of each matching file
     matching_files.each do |file_path|
-      set_module_variables(file_path, ',', 1)
+      set_module_variables(file_path, ',', @query1)
       @result = read_file(:maxTemp, :minTemp, :maxHumid)
     end
   end
@@ -57,7 +60,7 @@ class WeatherMean
     @result = {}
     # Read the content of each matching file
     matching_files.each do |file_path|
-      set_module_variables(file_path, ',', 2)
+      set_module_variables(file_path, ',', @query2)
       @result = read_file(:maxTemp, :minTemp, :meanHumid)
     end
     average
@@ -74,7 +77,7 @@ class WeatherMean
     puts 'Data not found!' if matching_files.empty?
     # Read the content of each matching file
     matching_files.each do |file_path|
-      set_module_variables(file_path, ',', 3)
+      set_module_variables(file_path, ',', @query3)
       read_file(:maxTemp, :minTemp)
     end
   end
@@ -86,7 +89,7 @@ class WeatherMean
   end
 
   def display_date(input, year)
-    input_obj = UserInput.new(input)
+    input_obj = UserInputValidator.new(input)
     # gets month value
     month_value = input_obj.fetch_month('i')
     output_obj = Output.new

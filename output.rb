@@ -7,6 +7,9 @@ class Output
 
   def initialize(result = {})
     @result = result
+    @query1 = '-e'
+    @query2 = '-a'
+    @query3 = '-c'
   end
 
   def display_normal_result(query)
@@ -21,18 +24,18 @@ class Output
 
   def display_maxtemp(query)
     print "\nHighest: #{custom_temp(@result[:maxTemp], 'c')}"
-    display_day(:maxTemp_day) if query == 1
+    display_day(:maxTemp_day) if query == @query1
   end
 
   def display_mintemp(query)
     print "\nLowest: #{custom_temp(@result[:minTemp], 'c')}"
-    display_day(:minTemp_day) if query == 1
+    display_day(:minTemp_day) if query == @query1
   end
 
   def display_humidity(query)
-    print "\nHumid: #{custom_percentage(@result[:maxHumid])}" if query == 1
-    print "\nHumid: #{custom_percentage(@result[:meanHumid])}" if query == 2
-    display_day(:maxHumid_day) if query == 1
+    print "\nHumid: #{custom_percentage(@result[:maxHumid])}" if query == @query1
+    print "\nHumid: #{custom_percentage(@result[:meanHumid])}" if query == @query2
+    display_day(:maxHumid_day) if query == @query1
   end
 
   def display_day(key)

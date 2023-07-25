@@ -5,25 +5,25 @@ module CustomCSV
   @file_name = 'w'
   @delimiter = ','
   @result = {}
-  @query_type = 1
+  @query_type = ''
   @headers = []
   @count = {}
 
   # reads file's specific column data
   def read_file(*keys)
-    @result = {} if @query_type == 3
+    @result = {} if @query_type == @query3
     # set_module_variables(filename, delimiter, query, result)
     CSV.foreach(@file_name, col_sep: @delimiter) do |row|
       # ignoring empty/null/extra lines
       next if row.empty? || row.nil? || row[0].include?('<!--')
 
       # file's required column indexes are saved
-      if @headers.nil? 
+      if @headers.nil?
         @headers = get_headers_index(row, keys)
         next
       end
       get_result(row, keys)
-      show_result(row) if @query_type == 3
+      show_result(row) if @query_type == @query3
     end
     @result
   end
@@ -50,9 +50,9 @@ module CustomCSV
     return initialize_result(row, keys) if @result.empty?
 
     keys.each do |key|
-      comparisons(row, key) if @query_type == 1
-      summation(row, key) if @query_type == 2
-      update_result(row, key) if @query_type == 3
+      comparisons(row, key) if @query_type == @query1
+      summation(row, key) if @query_type == @query2
+      update_result(row, key) if @query_type == @query3
     end
   end
 
@@ -85,8 +85,8 @@ module CustomCSV
   end
 
   def update_result(row, key)
-    @result[:"#{key}_day"] = row[0] if @query_type == 1
-    @result[:"#{key}_count"] = 1 if @query_type == 2
+    @result[:"#{key}_day"] = row[0] if @query_type == @query1
+    @result[:"#{key}_count"] = 1 if @query_type == @query2
     col_value = row[@headers[key]].to_f
     @result[key] = col_value
   end
