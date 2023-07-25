@@ -34,12 +34,12 @@ class UserInputValidator
   end
 
   def fetch_month(mode = '')
-    months = %w[jan feb mar apr may jun jul aug sep oct nov dec]
+    months = Date::ABBR_MONTHNAMES
     # if mode is 'i', it returns month number. Otherwise, returns month string
-    return months.find_index(@input[:month]) if mode.casecmp('i').zero?
+    return months.find_index(@input[:month]) - 1 if mode.casecmp('i').zero?
 
     month_value = @input[1].split('/')[1].to_i
-    @query[:month] = months[month_value - 1]
+    @query[:month] = months[month_value]
   end
 
   def fetch_file

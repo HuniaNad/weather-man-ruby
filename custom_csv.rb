@@ -47,6 +47,7 @@ module CustomCSV
 
   # generates query result
   def get_result(row, keys)
+    return unless row[0].match?(/\d/)
     return initialize_result(row, keys) if @result.empty?
 
     keys.each do |key|
@@ -62,8 +63,8 @@ module CustomCSV
   end
 
   def comparisons(row, key)
-    max_comparison(row, key) if key.to_s.include? 'max'
-    min_comparison(row, key) if key.to_s.include? 'min'
+    max_comparison(row, key) if key.to_s.include?('max')
+    min_comparison(row, key) if key.to_s.include?('min')
   end
 
   def max_comparison(row, key)
