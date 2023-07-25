@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative 'custom_output'
+require_relative 'output_utility'
 
 class Output
-  include CustomOutput
+  include OutputUtility
 
   def initialize(result = {})
     @result = result

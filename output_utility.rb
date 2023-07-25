@@ -2,7 +2,7 @@
 
 require 'colorize'
 
-module CustomOutput
+module OutputUtility
   def custom_date(date, format, sep)
     months = %w[january february march april may june july august september october november december]
     date_parts = date.delete(' ').split(sep)

@@ -1,25 +1,24 @@
 # frozen_string_literal: true
 
 require 'csv'
-require_relative 'custom_output'
-class CustomCSV
-  def initialize(file_name, delimiter, query_type, result = {})
-    @file_name = file_name
-    @delimiter = delimiter
-    @result = result
-    @query_type = query_type
-    @headers = []
-    @count = {}
-  end
+module CustomCSV
+  @file_name = 'w'
+  @delimiter = ','
+  @result = {}
+  @query_type = 1
+  @headers = []
+  @count = {}
 
   # reads file's specific column data
   def read_file(*keys)
+    @result = {} if @query_type == 3
+    # set_module_variables(filename, delimiter, query, result)
     CSV.foreach(@file_name, col_sep: @delimiter) do |row|
       # ignoring empty/null/extra lines
       next if row.empty? || row.nil? || row[0].include?('<!--')
 
       # file's required column indexes are saved
-      if @headers.empty?
+      if @headers.nil? 
         @headers = get_headers_index(row, keys)
         next
       end
@@ -88,7 +87,6 @@ class CustomCSV
   def update_result(row, key)
     @result[:"#{key}_day"] = row[0] if @query_type == 1
     @result[:"#{key}_count"] = 1 if @query_type == 2
-
     col_value = row[@headers[key]].to_f
     @result[key] = col_value
   end
